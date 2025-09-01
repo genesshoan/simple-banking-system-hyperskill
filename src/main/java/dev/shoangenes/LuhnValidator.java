@@ -6,11 +6,11 @@ public class LuhnValidator {
     /**
      * Validates a credit card number using the Luhn algorithm.
      *
-     * @param creditCardNumber the credit card number to validate
+     * @param creditNumber the credit card number to validate
      * @return true if the credit card number is valid, false otherwise
      */
-    public static boolean validate(String creditCardNumber) {
-        String cleaned = creditCardNumber.replaceAll("\\s+", "");
+    public static boolean validate(String creditNumber) {
+        String cleaned = creditNumber.replaceAll("\\s+", "");
         int checkDigit = cleaned.charAt(cleaned.length() - 1) - '0';
         int sum = luhnSum(cleaned.substring(0, cleaned.length() - 1));
         return (sum + checkDigit) % 10 == 0;
@@ -19,23 +19,23 @@ public class LuhnValidator {
     /**
      * Calculates the check digit for a given credit card number using the Luhn algorithm.
      *
-     * @param creditCardNumber the credit card number without the check digit
+     * @param creditNumber the credit card number without the check digit
      * @return the calculated check digit
      */
-    public static int calculateCheckSum(String creditCardNumber) {
-        int sum = luhnSum(creditCardNumber);
+    public static int calculateCheckSum(String creditNumber) {
+        int sum = luhnSum(creditNumber);
         int nextMultipleOf10 = ((sum + 9) / 10) * 10;
         return nextMultipleOf10 - sum;
     }
 
     /**
      * Calculates the Luhn sum for a given credit card number (excluding the check digit).
-     * @param creditCardNumber the credit card number without the check digit
+     * @param creditNumber the credit card number without the check digit
      * @return the Luhn sum
      */
-    private static int luhnSum(String creditCardNumber) {
+    private static int luhnSum(String creditNumber) {
         int sum = 0;
-        int[] digits = Arrays.stream(creditCardNumber.split(""))
+        int[] digits = Arrays.stream(creditNumber.split(""))
                 .mapToInt(Integer::parseInt)
                 .toArray();
 
