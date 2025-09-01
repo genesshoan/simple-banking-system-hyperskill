@@ -15,7 +15,7 @@ public class CardGenerator {
         long nextAccountNumber = Long.parseLong(dbManager.getLastId()) + 1;
         String accountNumber = String.format("%09d", nextAccountNumber);
         String fullNumber = BIN + accountNumber;
-        int checkDigit = LuhnValidator.calculateCheckSum(fullNumber);
+        int checkDigit = LuhnValidator.calculateCheckDigit(fullNumber);
         return fullNumber + checkDigit;
     }
 
