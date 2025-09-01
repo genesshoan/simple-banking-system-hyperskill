@@ -1,6 +1,8 @@
 package dev.shoangenes;
 
 import java.sql.*;
+import java.util.Optional;
+
 import org.sqlite.SQLiteDataSource;
 
 public class DatabaseManager {
@@ -122,23 +124,24 @@ public class DatabaseManager {
      * @return the Account object if found, otherwise null
      * @throws DatabaseException if a database access error occurs
      */
-    public Account getAccount(String cardNumber) {
+    public Optional<Account> getAccount(String cardNumber) {
         String query = "SELECT * FROM cards WHERE card_number = ?";
-        Account account = null;
 
         try (PreparedStatement statement = conn.prepareStatement(query)) {
             statement.setString(1, cardNumber);
-            ResultSet rs = statement.executeQuery();
-            if (rs.next()) {
-                account = new Account(
-                        rs.getString("card_number"),
-                        rs.getString("pin"),
-                        rs.getDouble("balance"));
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(new Account(
+                            rs.getString("card_number"),
+                            rs.getString("pin"),
+                            rs.getDouble("balance")
+                    ));
+                }
             }
         } catch (Exception e) {
             throw new DatabaseException("Failed to retrieve account from database.");
         }
-        return account;
+        return Optional.empty();
     }
 
     /**
@@ -172,6 +175,30 @@ public class DatabaseManager {
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseException("Failed to delete account from database.");
+        }
+    }
+
+    public void transfer(Account from, Account to, double amount) {
+        try {
+            conn.setAutoCommit(false);
+
+            updateBalance(from.getNumber(), from.getBalance() - amount);
+            updateBalance(to.getNumber(), to.getBalance() + amount);
+
+            conn.commit();
+        } catch (SQLException | DatabaseException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackEx) {
+                throw new DatabaseException("Failed to rollback transaction.");
+            }
+            throw new DatabaseException("Failed to transfer funds between accounts.");
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+                throw new DatabaseException("Failed to reset auto-commit mode.");
+            }
         }
     }
 }
