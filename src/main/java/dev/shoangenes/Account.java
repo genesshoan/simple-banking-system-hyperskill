@@ -52,4 +52,13 @@ public class Account {
     public void setBalance(double balance) {
         this.balance = balance;
     }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "number='" + number + '\'' +
+                ", pin='" + pin + '\'' +
+                ", balance=" + balance +
+                '}';
+    }
 }

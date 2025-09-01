@@ -7,7 +7,7 @@ import org.sqlite.SQLiteDataSource;
 
 public class DatabaseManager {
     private Connection conn;
-    private final String URL = "jdbc:sqlite:java/database/cards.s3db";
+    private final String URL = "jdbc:sqlite:cards.s3db";
 
     /**
      * Constructs a new DatabaseManager and establishes a connection to the database.
